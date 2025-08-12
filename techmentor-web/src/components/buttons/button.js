@@ -1,5 +1,6 @@
 import React from "react";
 import "./button.css";
+import { Link } from "react-router-dom";
 
 export default function Button({
   text,
@@ -7,15 +8,16 @@ export default function Button({
   type = "button",
   variant = "primary",
   link,
-  size = 'small'
+  size = 'small',
+  state = null
 }) {
   const className = `btn btn-${variant} btn-${size}`;
 
   if (link) {
     return (
-      <a href={link} className={className} onClick={onClick}>
+      <Link to={link} className={className} state={state}>
         {text}
-      </a>
+      </Link>
     );
   }
 

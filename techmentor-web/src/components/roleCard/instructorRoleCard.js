@@ -17,7 +17,13 @@ export default function InstructorRoleCard({
       <div className="role-text">
         <h2>{title}</h2>
         <p>{description}</p>
-        <Button text={buttonText} link="#" size="large" variant="primary" />
+        <Button
+          text={buttonText}
+          link="/signup"
+          size="large"
+          variant="primary"
+          state='instructor'
+        />
       </div>
     </div>
   );

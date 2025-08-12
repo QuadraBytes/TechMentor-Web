@@ -14,7 +14,13 @@ export default function StudentRoleCard({
       <div className="role-text">
         <h2>{title}</h2>
         <p>{description}</p>
-        <Button text={buttonText} link="#" size="large" variant="secondary"/>
+        <Button
+          text={buttonText}
+          link="/signup"
+          size="large"
+          variant="secondary"
+          state="student"
+        />
       </div>
       <div className="role-img">
         <img src={img} alt={title} />
