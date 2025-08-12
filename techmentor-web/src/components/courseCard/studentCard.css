@@ -1,0 +1,80 @@
+.student-card {
+    background: #afeff457;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    /* make left & right side by side */
+    justify-content: space-between;
+    align-items: stretch;
+    transition: transform 0.2s ease-in-out;
+}
+
+.student-card:hover {
+    transform: translateY(-4px);
+}
+
+.student-card__left {
+    flex: 1;
+}
+
+.student-card__right {
+    display: flex;
+    flex-direction: column;
+    /* stack status on top, button at bottom */
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+
+.student-card:hover {
+    transform: translateY(-4px);
+}
+
+.student-card__title {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+.student-card__description {
+    color: #555;
+    margin: 8px 0;
+}
+
+.student-card__instructor {
+    font-weight: 500;
+    color: #444;
+}
+
+.student-card__status {
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+.student-card__status.enrolled {
+    color: green;
+}
+
+.student-card__status.not-enrolled {
+    color: red;
+}
+
+.student-card__status {
+    font-weight: bold;
+    margin-bottom: auto;
+}
+
+.student-card__status.enrolled {
+    color: green;
+}
+
+.student-card__status.not-enrolled {
+    color: red;
+}
+
+/* Button wrapper */
+.student-card__button-wrapper {
+    margin-top: 8px;
+}
