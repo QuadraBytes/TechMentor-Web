@@ -1,0 +1,36 @@
+.btn {
+  border-radius: 6px;
+  border-width: 0;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #007AFF;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #AB2EFF;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #8715d3;
+}
+
+.btn-small {
+  font-size: 1rem;
+  padding: 6px 25px;
+}
+
+.btn-large {
+  font-size: 1rem;
+  padding: 8px 30px;
+}
