@@ -18,25 +18,37 @@ export default function Navbar() {
 
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
-      <div className="logo-container">
+      <a
+        href="/"
+        onClick={() => window.location.reload()}
+        className="logo-container"
+      >
         <img src={logoImage} className="logo-image" alt="Tech Illustration" />
         <Link to="/" className="logo">
           TechMentor
-        </Link>
-      </div>
+        </Link>{" "}
+      </a>
 
       <ul className="nav-links">
         <li>
-          <Link to="/">Home</Link>
+          <a href="/" onClick={() => window.location.reload()}>
+            Home
+          </a>
         </li>
         <li>
           <Link to="/courses">Courses</Link>
         </li>
         <li>
-          <Link to="/contact">Contact</Link>
+          <Link to="/instructor">Instructor</Link>
         </li>
         <li>
-          <Link to="/instructor">Instructor</Link>
+          <Link to="/student">Student</Link>
+        </li>
+        <li>
+          <Link to="/about">About Us</Link>
+        </li>
+        <li>
+          <a href="#footer">Contact Us</a>
         </li>
       </ul>
 

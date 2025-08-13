@@ -15,7 +15,7 @@ export default function InstructorRoleCard({
         <img src={img} alt={title} />
       </div>
       <div className="role-text">
-        <h2>{title}</h2>
+        <h2 className="role-title">{title}</h2>
         <p>{description}</p>
         <Button
           text={buttonText}

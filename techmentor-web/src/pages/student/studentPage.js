@@ -1,18 +1,17 @@
-import "./courseStyle.css";
+import "./studentStyle.css";
 import { useState } from "react";
 import Navbar from "../../components/navbar/navbar";
-import circle1 from "../../assets/circle1.png";
-import circle2 from "../../assets/circle2.png";
 import Footer from "../../components/footer/footer";
+import StudentCard from "../../components/courseCard/studentCard";
 import Modal from "../../components/model/model";
-import CourseCard from "../../components/courseCard/courseCard";
-import Button from "../../components/buttons/button";
 
-export const CoursePage = () => {
+export const StudentPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   const handleCourseClick = (course) => {
+    console.log("Course clicked:", course);
     setSelectedCourse(course);
     setIsModalOpen(true);
   };
@@ -27,7 +26,6 @@ export const CoursePage = () => {
         "Additional content for Course 1",
         "Additional content for Course 1",
       ],
-      enrolled: false,
     },
     {
       title: "Course 2",
@@ -38,7 +36,6 @@ export const CoursePage = () => {
         "Additional content for Course 2",
         "Additional content for Course 2",
       ],
-      enrolled: true,
     },
     {
       title: "Course 3",
@@ -49,35 +46,30 @@ export const CoursePage = () => {
         "Additional content for Course 3",
         "Additional content for Course 3",
       ],
-      enrolled: true,
     },
   ];
 
   return (
     <div>
       <Navbar />
-      <div className="course-page">
-        {/* <img className="circle1" src={circle1} alt="Circle 1" />
-        <img className="circle2" src={circle2} alt="Circle 2" />
-        <img className="circle3" src={circle2} alt="Circle 2" />
-        <img className="circle4" src={circle1} alt="Circle 2" />
-        <img className="circle5" src={circle1} alt="Circle 2" /> */}
-        <h1>Available Courses</h1>
-        <div className="course-grid">
-          {courses.map((course, index) => (
-            <CourseCard
-              key={index}
-              title={course.title}
-              description={course.description}
-              instructor={course.instructor}
-              isEnrolled={course.enrolled}
-              onClick={() => handleCourseClick(course)}
-            />
-          ))}
-        </div>
+      <div className="student-page">
+        <h1>My Courses</h1>
+        {courses.map((course, index) => (
+          <StudentCard
+            key={index}
+            title={course.title}
+            description={course.description}
+            instructor={course.instructor}
+            content={course.content}
+            onClick={() => handleCourseClick(course)}
+          />
+        ))}
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
         {selectedCourse && (
           <>
             <h2 className="course-modal-title">{selectedCourse.title}</h2>
@@ -87,23 +79,12 @@ export const CoursePage = () => {
             <p>
               <strong>Description:</strong> {selectedCourse.description}
             </p>
-            <p>
-              <strong>Content:</strong>
-            </p>
+            <p><strong>Content:</strong></p>
             <ul>
               {selectedCourse.content.map((item, idx) => (
                 <li key={idx}>{item}</li>
               ))}
             </ul>
-            <div className="course-modal-actions">
-              {selectedCourse.enrolled ? (
-                <p style={{ color: "green" }}>
-                  You are enrolled in this course.
-                </p>
-              ) : (
-                <Button text="Enroll" onClick={() => {}} />
-              )}
-            </div>
           </>
         )}
       </Modal>

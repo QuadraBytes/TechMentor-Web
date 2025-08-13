@@ -61,9 +61,9 @@ export default function HomePage() {
 
         <SkillsSection skills={skills} />
 
-        <section className="testimonials">
+        <section className="reviews">
           <h1>What Our Students Say</h1>
-          <div className="testimonial-container">
+          <div className="reviews-container">
             <ReviewCard
               name="John William"
               text="TechMentor made learning so easy and fun! The courses are clear and well-structured."

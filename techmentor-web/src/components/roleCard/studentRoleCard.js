@@ -12,7 +12,7 @@ export default function StudentRoleCard({
   return (
     <div className="role-card">
       <div className="role-text">
-        <h2>{title}</h2>
+        <h2 className="role-title">{title}</h2>
         <p>{description}</p>
         <Button
           text={buttonText}

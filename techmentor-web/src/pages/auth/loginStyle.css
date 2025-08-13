@@ -95,7 +95,7 @@ input {
 }
 
 input:focus {
-  border-color: #3f51b5; /* primary color */
+  border-color: #3f51b5;
   outline: none;
 }
 

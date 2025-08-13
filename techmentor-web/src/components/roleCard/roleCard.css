@@ -10,11 +10,12 @@
 }
 
 .role-text {
-   margin-top: 50px;
+   margin-top: 75px;
    width: 75%;
 }
 
-.role-text h2 {
+.role-text .role-title {
+  text-align: left;
   font-size: 3rem;
 }
 

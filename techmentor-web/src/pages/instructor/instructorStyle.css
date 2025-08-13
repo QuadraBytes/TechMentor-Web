@@ -1,13 +1,33 @@
 .course-page {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 20px;  
+    justify-content: center;
+    justify-items: center;
     align-items: center;
+    margin-bottom: 50px;
+}
+
+.add-button-container {
+    position: absolute;
+    top: 100px;
+    right: 50px;
 }
 
 h1 {
     font-size: 2.5rem;
     margin-bottom: 50px;
+}
+
+h2 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.2rem;
+}
+
+.form p{
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .role-section {
@@ -71,17 +91,23 @@ h1 {
 .course-header {
     display: flex;
     justify-content: space-between;
-    /* space between title & button */
     align-items: center;
-    /* vertical center alignment */
     margin-bottom: 20px;
 }
 
 .course-header h1 {
     margin: 0;
-    /* remove default margin for better alignment */
 }
 
 .course-list {
     margin-top: 20px;
+}
+
+.modal .delete-button{
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
 }
