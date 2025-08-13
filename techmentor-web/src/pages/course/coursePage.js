@@ -1,5 +1,5 @@
 import "./courseStyle.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/navbar/navbar";
 import circle1 from "../../assets/circle1.png";
 import circle2 from "../../assets/circle2.png";
@@ -7,51 +7,37 @@ import Footer from "../../components/footer/footer";
 import Modal from "../../components/model/model";
 import CourseCard from "../../components/courseCard/courseCard";
 import Button from "../../components/buttons/button";
+import { useFetchCourses } from "../../hooks/useCourseApi";
 
 export const CoursePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courses, setCourses] = useState([]);
 
   const handleCourseClick = (course) => {
     setSelectedCourse(course);
     setIsModalOpen(true);
   };
 
-  const courses = [
-    {
-      title: "Course 1",
-      description: "Description for Course 1",
-      instructor: "Instructor 1",
-      content: [
-        "Content for Course 1",
-        "Additional content for Course 1",
-        "Additional content for Course 1",
-      ],
-      enrolled: false,
-    },
-    {
-      title: "Course 2",
-      description: "Description for Course 2",
-      instructor: "Instructor 2",
-      content: [
-        "Content for Course 2",
-        "Additional content for Course 2",
-        "Additional content for Course 2",
-      ],
-      enrolled: true,
-    },
-    {
-      title: "Course 3",
-      description: "Description for Course 3",
-      instructor: "Instructor 3",
-      content: [
-        "Content for Course 3",
-        "Additional content for Course 3",
-        "Additional content for Course 3",
-      ],
-      enrolled: true,
-    },
-  ];
+  const handleSuccess = () => {
+    console.log("Courses fetched successfully:");
+  };
+
+  const handleError = (error) => {
+    console.error("Error fetching courses:", error);
+    window.alert("Error", "Failed to fetch courses. Please try again later.");
+  };
+
+  const { data, isLoading, isError } = useFetchCourses(
+    handleSuccess,
+    handleError
+  );
+
+  useEffect(() => {
+    if (data) {
+      setCourses(data.courses);
+    }
+  }, [data]);
 
   return (
     <div>
@@ -64,12 +50,16 @@ export const CoursePage = () => {
         <img className="circle5" src={circle1} alt="Circle 2" /> */}
         <h1>Available Courses</h1>
         <div className="course-grid">
-          {courses.map((course, index) => (
+          {isLoading && <p>Loading courses...</p>}
+          {isError && <p>Error loading courses. Please try again later.</p>}
+          {!isLoading && !isError && courses.length === 0 && (
+            <p>No courses available at the moment.</p>
+          )}
+          {!isLoading && !isError && courses.map((course, index) => (
             <CourseCard
               key={index}
               title={course.title}
-              description={course.description}
-              instructor={course.instructor}
+              instructor={course.instructor_name}
               isEnrolled={course.enrolled}
               onClick={() => handleCourseClick(course)}
             />

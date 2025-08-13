@@ -13,6 +13,7 @@ const ApiClient = axios.create({
 
 ApiClient.interceptors.request.use(
   (config) => {
+    console.log("Adding Bearer token to request");
     const token = StorageService.get("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -26,6 +27,7 @@ ApiClient.interceptors.request.use(
 ApiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.error("API error:", error);
     const originalRequest = error.config;
 
     if (error.response?.status === 403 && !originalRequest._retry) {
