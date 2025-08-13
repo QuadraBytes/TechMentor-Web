@@ -18,6 +18,11 @@
     border-radius: 10px;
     position: relative;
     animation: fadeIn 0.3s ease-in-out;
+    position: relative;
+    z-index: 1000;
+    overflow-y: auto;
+    max-height: 80vh;
+    padding-right: 30px;
 }
 
 .modal-close {
@@ -28,6 +33,7 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+       
 }
 
 @keyframes fadeIn {

@@ -9,7 +9,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="footer">
+    <footer className="footer" id='footer'>
       <h1>TechMentor</h1>
       <div className="footer-content">
         <div className="footer-links">
