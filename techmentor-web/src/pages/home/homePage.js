@@ -15,11 +15,11 @@ import circle2 from "../../assets/circle2.png";
 
 import HeroSection from "../../components/hero/heroSection";
 import SkillsSection from "../../components/skillsSection/skillsSection";
-import TestimonialCard from "../../components/testimonialCard/testimonialCard";
 import StudentRoleCard from "../../components/roleCard/studentRoleCard";
 import InstructorRoleCard from "../../components/roleCard/instructorRoleCard";
 import Navbar from "../../components/navbar/navbar";
 import Footer from "../../components/footer/footer";
+import ReviewCard from "../../components/reviewCard/reviewCard";
 
 export default function HomePage() {
   const skills = [
@@ -64,35 +64,35 @@ export default function HomePage() {
         <section className="testimonials">
           <h1>What Our Students Say</h1>
           <div className="testimonial-container">
-            <TestimonialCard
+            <ReviewCard
               name="John William"
               text="TechMentor made learning so easy and fun! The courses are clear and well-structured."
             />
-            <TestimonialCard
+            <ReviewCard
               name="Smith Rogers"
               text="I love how flexible the platform is. I could study at my own pace and still get help when needed."
             />
-            <TestimonialCard
+            <ReviewCard
               name="Sarah Ridge"
               text="TechMentor made learning so easy and fun! The courses are clear and well-structured."
             />
-            <TestimonialCard
+            <ReviewCard
               name="Willey Brown"
               text="Great variety of courses and amazing instructors. I feel more confident in my skills now!"
             />
-            <TestimonialCard
+            <ReviewCard
               name="Natasha Silver"
               text="TechMentor made learning so easy and fun! The courses are clear and well-structured."
             />
-            <TestimonialCard
+            <ReviewCard
               name="Tom Carder"
               text="Teaching on TechMentor has been a rewarding experience. The support team is fantastic too!"
             />
-            <TestimonialCard
+            <ReviewCard
               name="Kelly White"
               text="TechMentor made learning so easy and fun! The courses are clear and well-structured."
             />
-            <TestimonialCard
+            <ReviewCard
               name="Edward Morty"
               text="I love how flexible the platform is. I could study at my own pace and still get help when needed."
             />

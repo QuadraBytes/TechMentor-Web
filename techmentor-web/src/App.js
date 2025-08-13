@@ -3,7 +3,7 @@ import Navbar from './components/navbar/navbar';
 import SignupPage from './pages/auth/signUp';
 import LoginPage from './pages/auth/loginPage';
 import { ContactPage } from './pages/contact/contactPage';
-import { CoursePage } from './pages/coursePage.js/coursePage';
+import CoursePage from './pages/course/coursePage';
 import  HomePage  from './pages/home/homePage';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
