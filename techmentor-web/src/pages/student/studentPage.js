@@ -1,14 +1,17 @@
 import "./studentStyle.css";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import Navbar from "../../components/navbar/navbar";
 import Footer from "../../components/footer/footer";
 import StudentCard from "../../components/courseCard/studentCard";
 import Modal from "../../components/model/model";
+import { AuthContext } from "../../contexts/authContext";
+import { useStudentCourses } from "../../hooks/useStudentApi";
 
 export const StudentPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const { authData } = useContext(AuthContext);
 
   const handleCourseClick = (course) => {
     console.log("Course clicked:", course);
@@ -16,70 +19,64 @@ export const StudentPage = () => {
     setIsModalOpen(true);
   };
 
-  const courses = [
-    {
-      title: "Course 1",
-      description: "Description for Course 1",
-      instructor: "Instructor 1",
-      content: [
-        "Content for Course 1",
-        "Additional content for Course 1",
-        "Additional content for Course 1",
-      ],
-    },
-    {
-      title: "Course 2",
-      description: "Description for Course 2",
-      instructor: "Instructor 2",
-      content: [
-        "Content for Course 2",
-        "Additional content for Course 2",
-        "Additional content for Course 2",
-      ],
-    },
-    {
-      title: "Course 3",
-      description: "Description for Course 3",
-      instructor: "Instructor 3",
-      content: [
-        "Content for Course 3",
-        "Additional content for Course 3",
-        "Additional content for Course 3",
-      ],
-    },
-  ];
+  const handleSuccess = () => {
+    console.log("Courses fetched successfully:");
+  };
+
+  const handleError = (error) => {
+    console.error("Error fetching courses:", error);
+    window.alert("Failed to fetch courses. Please try again later.");
+  };
+
+  const { data, isLoading, isError } = useStudentCourses(
+    authData?.userId,
+    handleSuccess,
+    handleError
+  );
+
+  useEffect(() => {
+    if (data) {
+      setCourses(data.enrolledCourses);
+    }
+  }, [data]);
 
   return (
     <div>
       <Navbar />
       <div className="student-page">
         <h1>My Courses</h1>
-        {courses.map((course, index) => (
-          <StudentCard
-            key={index}
-            title={course.title}
-            description={course.description}
-            instructor={course.instructor}
-            content={course.content}
-            onClick={() => handleCourseClick(course)}
-          />
-        ))}
+        {isLoading && <p>Loading courses...</p>}
+        {isError && <p>Error loading courses. Please try again later.</p>}
+        {!isLoading && !isError && courses.length === 0 && (
+          <p>No courses available at the moment.</p>
+        )}
+        {!isLoading &&
+          !isError &&
+          courses.map((course, index) => (
+            <StudentCard
+              key={index}
+              title={course.title}
+              description={course.description}
+              instructor={course.instructor_name}
+              content={course.content}
+              onClick={() => handleCourseClick(course)}
+            />
+          ))}
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      >
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {selectedCourse && (
           <>
             <h2 className="course-modal-title">{selectedCourse.title}</h2>
             <p>
-              <strong>Instructor:</strong> {selectedCourse.instructor}
+              <strong>Instructor:</strong> {selectedCourse.instructor_name}
             </p>
             <p>
               <strong>Description:</strong> {selectedCourse.description}
             </p>
-            <p><strong>Content:</strong></p>
+            <p>
+              <strong>Content:</strong>
+            </p>
             <ul>
               {selectedCourse.content.map((item, idx) => (
                 <li key={idx}>{item}</li>

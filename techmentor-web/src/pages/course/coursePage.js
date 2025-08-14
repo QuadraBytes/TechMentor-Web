@@ -1,5 +1,5 @@
 import "./courseStyle.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Navbar from "../../components/navbar/navbar";
 import circle1 from "../../assets/circle1.png";
 import circle2 from "../../assets/circle2.png";
@@ -7,15 +7,21 @@ import Footer from "../../components/footer/footer";
 import Modal from "../../components/model/model";
 import CourseCard from "../../components/courseCard/courseCard";
 import Button from "../../components/buttons/button";
-import { useFetchCourses } from "../../hooks/useCourseApi";
+import { useEnrollInCourse, useFetchCourses } from "../../hooks/useCourseApi";
+import { AuthContext } from "../../contexts/authContext";
+import { useNavigate } from "react-router-dom";
 
 export const CoursePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [courses, setCourses] = useState([]);
+  const { authData } = useContext(AuthContext);
+  const navigation = useNavigate();
 
   const handleCourseClick = (course) => {
     setSelectedCourse(course);
+    console.log("Selected course:", course);
+    console.log("Auth Data:", authData);
     setIsModalOpen(true);
   };
 
@@ -23,15 +29,37 @@ export const CoursePage = () => {
     console.log("Courses fetched successfully:");
   };
 
-  const handleError = (error) => {
-    console.error("Error fetching courses:", error);
-    window.alert("Error", "Failed to fetch courses. Please try again later.");
+  const handleError = () => {
+    console.error("Error fetching courses");
+    window.alert("Failed to fetch courses. Please try again later.");
   };
 
-  const { data, isLoading, isError } = useFetchCourses(
+  const handleEnrollSuccess = () => {
+    window.alert(
+      "You have successfully enrolled to this course"
+    );
+    navigation("/student");
+  };
+
+  const handleEnrollError = () => {
+    console.error("Error enrolling in course");
+    window.alert("There was an error enrolling in the course");
+  };
+
+  const { data, isLoading, isError, refetch } = useFetchCourses(
     handleSuccess,
     handleError
   );
+
+  const { mutate, status } = useEnrollInCourse(handleEnrollSuccess, handleEnrollError);
+
+  const handleEnroll = () => {
+    if (!authData || authData.userRole == "instructor") {
+      window.alert("Sign up or login as a student to enroll in courses!");
+      return;
+    }
+    mutate({ courseId: selectedCourse.id, userId: authData.userId, userName: authData.userName });
+  };
 
   useEffect(() => {
     if (data) {
@@ -55,15 +83,22 @@ export const CoursePage = () => {
           {!isLoading && !isError && courses.length === 0 && (
             <p>No courses available at the moment.</p>
           )}
-          {!isLoading && !isError && courses.map((course, index) => (
-            <CourseCard
-              key={index}
-              title={course.title}
-              instructor={course.instructor_name}
-              isEnrolled={course.enrolled}
-              onClick={() => handleCourseClick(course)}
-            />
-          ))}
+          {!isLoading &&
+            !isError &&
+            courses.map((course, index) => (
+              <CourseCard
+                key={index}
+                title={course.title}
+                instructor={course.instructor_name}
+                isEnrolled={
+                  course.students?.some(
+                    (student) =>
+                      student.studentId?.toString() == authData.userId
+                  ) ?? false
+                }
+                onClick={() => handleCourseClick(course)}
+              />
+            ))}
         </div>
       </div>
 
@@ -86,12 +121,26 @@ export const CoursePage = () => {
               ))}
             </ul>
             <div className="course-modal-actions">
-              {selectedCourse.enrolled ? (
-                <p style={{ color: "green" }}>
+              {selectedCourse.students?.some(
+                (student) => student.studentId?.toString() == authData.userId
+              ) ? (
+                <p style={{ color: "green", fontWeight: "bold" }}>
                   You are enrolled in this course.
                 </p>
               ) : (
-                <Button text="Enroll" onClick={() => {}} />
+                <>
+                  {status === "pending" ? (
+                    <Button
+                      type="button"
+                      text="Enrolling..."
+                      size="large"
+                      variant="secondary"
+                      disabled
+                    />
+                  ) : (
+                    <Button text="Enroll" onClick={handleEnroll} />
+                  )}
+                </>
               )}
             </div>
           </>

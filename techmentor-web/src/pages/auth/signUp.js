@@ -65,13 +65,15 @@ export default function SignupPage() {
 
   const handleSuccess = () => {
     console.log("Registration successful");
-    window.alert("Registration Successful", "You can now sign in.");
+    window.alert(
+      "Registration Successful! You can now sign in."
+    );
     navigation("/login");
   };
 
   const handleError = () => {
     console.log("Registration failed");
-    window.alert("Registration Failed", "Please try again.");
+    window.alert("Registration Failed! Please try again.");
   };
 
   const { mutate, status } = useRegister(handleSuccess, handleError);
@@ -173,7 +175,7 @@ export default function SignupPage() {
           )}
 
           <div className="button-container">
-            {status === "loading" ? (
+            {status === "pending" ? (
               <Button
                 type="button"
                 text="Signing Up..."

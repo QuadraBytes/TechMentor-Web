@@ -22,19 +22,19 @@ const addCourse = async (data) => {
 };
 
 const editCourse = async ({ courseId, data }) => {
-  const res = await apiClient.put(`//${courseId}`, data);
+  const res = await apiClient.put(`/${courseId}`, data);
   console.log(res.data);
   return res.data;
 };
 
 const deleteCourse = async ({ courseId }) => {
-  const res = await apiClient.delete(`//${courseId}`);
+  const res = await apiClient.delete(`/${courseId}`);
   console.log(res.data);
   return res.data;
 };
 
-const enrollInCourse = async ({ courseId, userId }) => {
-  const res = await apiClient.post(`/enroll/${courseId}`, {id: userId});
+const enrollInCourse = async ({ courseId, userId, userName }) => {
+  const res = await apiClient.post(`/enroll/${courseId}`, {id: userId, username: userName});
   console.log(res.data);
   return res.data;
 };

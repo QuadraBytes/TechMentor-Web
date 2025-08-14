@@ -27,7 +27,7 @@ export default function LoginPage() {
 
   const handleSuccess = async (data) => {
     const { accessToken, refreshToken, user } = data;
-    await login(accessToken, refreshToken, user.id, user.name, data.role);
+    await login(accessToken, refreshToken, user.id, user.name, user.email, data.role);
 
     if (data.role === "student") {
       navigation("/student");
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
   const handleError = (err) => {
     console.log("Login failed:", err?.response?.data || err.message);
-    window.alert("Login Failed", "Invalid credentials or network error.");
+    window.alert("Invalid credentials or network error.");
   };
 
   const { mutate, status } = useSignIn(handleSuccess, handleError);
@@ -92,25 +92,23 @@ export default function LoginPage() {
           )}
 
           <div className="button-container">
-            {
-              status === "loading" ? (
-                <Button
-                  type="button"
-                  text="Logging In..."
-                  size="large"
-                  variant="secondary"
-                  disabled
-                />
-              ) : (
-                <Button
-                  type="submit"
-                  text="Log In"
-                  size="large"
-                  variant="primary"
-                  disabled={!isFormValid}
-                />
-              )
-            }
+            {status === "pending" ? (
+              <Button
+                type="button"
+                text="Logging In..."
+                size="large"
+                variant="secondary"
+                disabled
+              />
+            ) : (
+              <Button
+                type="submit"
+                text="Log In"
+                size="large"
+                variant="primary"
+                disabled={!isFormValid}
+              />
+            )}
           </div>
 
           <p className="signup-text">

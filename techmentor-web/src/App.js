@@ -10,6 +10,7 @@ import HomePage from "./pages/home/homePage";
 import { InstructorPage } from "./pages/instructor/instructorPage";
 import { StudentPage } from "./pages/student/studentPage";
 import AboutPage from "./pages/about/aboutPage";
+import AiAssistant from "./components/aiAssistant/aiAssistant";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/about" element={<AboutPage />} />
             </Routes>
+            <AiAssistant />
           </main>
         </QueryClientProvider>
       </AuthProvider>

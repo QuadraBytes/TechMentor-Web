@@ -22,9 +22,10 @@ export const AuthProvider = ({ children }) => {
     const userId = StorageService.get("userId");
     const userName = StorageService.get("userName");
     const userRole = StorageService.get("userRole");
+    const userEmail = StorageService.get("userEmail");
 
-    if (token && refreshToken && userId && userName && userRole) {
-      setAuthData({ userId, userName, userRole });
+    if (token && refreshToken && userId && userName && userRole && userEmail) {
+      setAuthData({ userId, userName, userEmail, userRole });
       setIsAuthenticated(true);
       console.log("Auth data loaded successfully");
     } else {
@@ -34,19 +35,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   };
 
-  const login = (token, refreshToken, userId, userName, userRole) => {
+  const login = (token, refreshToken, userId, userName, userEmail, userRole) => {
     StorageService.save("accessToken", token);
     StorageService.save("refreshToken", refreshToken);
     StorageService.save("userId", userId);
     StorageService.save("userName", userName);
     StorageService.save("userRole", userRole);
+    StorageService.save("userEmail", userEmail);
 
     if (userRole === "student") {
       navigate("/student");
     } else {
       navigate("/instructor");
     }
-    setAuthData({ userId, userName, userRole });
+    setAuthData({ userId, userName, userEmail, userRole });
     setIsAuthenticated(true);
     console.log("Login successful");
   };
