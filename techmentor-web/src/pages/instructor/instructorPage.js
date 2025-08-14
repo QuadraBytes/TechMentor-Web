@@ -23,6 +23,7 @@ export const InstructorPage = () => {
     title: "",
     description: "",
     contents: [""],
+    image: ""
   });
   const [touched, setTouched] = useState({
     title: false,
@@ -81,6 +82,7 @@ export const InstructorPage = () => {
       title: "",
       description: "",
       contents: [""],
+      image: ""
     });
     setIsModalOpen(false);
     refetch();
@@ -94,6 +96,12 @@ export const InstructorPage = () => {
 
   const handleUpdateSuccess = () => {
     window.alert("Course updated successfully");
+    setNewCourse({
+      title: "",
+      description: "",
+      contents: [""],
+      image: ""
+    });
   };
 
   const handleUpdateError = () => {
@@ -127,6 +135,7 @@ export const InstructorPage = () => {
       instructor_name: authData?.userName,
       instructor_email: authData?.userEmail,
       content: newCourse.contents,
+      image: newCourse.image
     });
     setIsModalOpen(false);
   };
@@ -138,6 +147,7 @@ export const InstructorPage = () => {
       title: course.title,
       description: course.description,
       contents: course.content || [""],
+      image: course.image || ""
     });
     setIsModalOpen(true);
   };
@@ -151,6 +161,7 @@ export const InstructorPage = () => {
         title: newCourse.title,
         description: newCourse.description,
         content: newCourse.contents,
+        image: newCourse.image
       },
     });
     setIsModalOpen(false);
@@ -176,6 +187,32 @@ export const InstructorPage = () => {
     updated[index] = value;
     setNewCourse({ ...newCourse, contents: updated });
   };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "techmentor-preset");
+
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/da7ajltkm/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await res.json();
+      console.log("Uploaded image URL:", data.secure_url);
+      setNewCourse((prev) => ({ ...prev, image: data.secure_url }));
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      alert("Image upload failed");
+    }
+  };
+
 
   return (
     <div>
@@ -225,7 +262,9 @@ export const InstructorPage = () => {
           onSubmit={modalMode === "add" ? handleAddCourse : handleUpdateModal}
           noValidate
         >
-          <h4 style={{textAlign:"center"}}>{modalMode === "add" ? "Add New Course" : "Edit Course"}</h4>
+          <h4 style={{ textAlign: "center" }}>
+            {modalMode === "add" ? "Add New Course" : "Edit Course"}
+          </h4>
           <p>
             {modalMode === "add"
               ? "Please fill in the details to add your new course."
@@ -290,12 +329,31 @@ export const InstructorPage = () => {
               )}
             </div>
           ))}
+
           <Button
             type="button"
             text="Add Content Block"
             variant="secondary"
             onClick={handleAddContentBlock}
           />
+
+          <label htmlFor="courseImage">Course Image</label>
+          <input
+            id="courseImage"
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleImageUpload(e)}
+          />
+          {newCourse.image && (
+            <div style={{ marginTop: "8px", display: "flex", justifyContent: "center" }}>
+              <img
+                src={newCourse.image}
+                alt="Course preview"
+                style={{ width: "150px", height: "auto", borderRadius: "8px" }}
+              />
+            </div>
+          )}
+
           {status === "pending" ? (
             <div className="button-container">
               <Button

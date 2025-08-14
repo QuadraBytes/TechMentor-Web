@@ -7,7 +7,9 @@ import Button from "../../components/buttons/button";
 import "./loginStyle.css";
 import circle1 from "../../assets/circle1.png";
 import circle2 from "../../assets/circle2.png";
-import { useRegister } from "../../hooks/useAuthApi";
+import { useRegister, useGoogleSignIn } from "../../hooks/useAuthApi";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function SignupPage() {
   const navigation = useNavigate();
@@ -65,10 +67,18 @@ export default function SignupPage() {
 
   const handleSuccess = () => {
     console.log("Registration successful");
-    window.alert(
-      "Registration Successful! You can now sign in."
-    );
+    window.alert("Registration Successful! You can now sign in.");
     navigation("/login");
+  };
+
+  const handleGoogleSuccess = () => {
+    console.log("Google Sign-In successful");
+    window.alert("Google Sign-In Successful! You can now access your account.");
+    if (role === "student") {
+      navigation("/student");
+    } else if (role === "instructor") {
+      navigation("/instructor");
+    }
   };
 
   const handleError = () => {
@@ -77,6 +87,18 @@ export default function SignupPage() {
   };
 
   const { mutate, status } = useRegister(handleSuccess, handleError);
+  const { mutate: googleLogin } = useGoogleSignIn(
+    handleGoogleSuccess,
+    handleError
+  );
+
+  const handleGoogleSignIn = (name, email) => {
+    googleLogin({
+      name,
+      email,
+      role,
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -192,6 +214,20 @@ export default function SignupPage() {
                 disabled={!isFormValid}
               />
             )}
+          </div>
+
+          <div className="google-login">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                const decoded = jwtDecode(credentialResponse.credential);
+                console.log(decoded);
+
+                handleGoogleSignIn(decoded.name, decoded.email);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
           </div>
 
           <p className="signup-text">

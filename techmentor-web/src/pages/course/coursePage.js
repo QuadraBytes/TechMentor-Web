@@ -90,6 +90,7 @@ export const CoursePage = () => {
                 key={index}
                 title={course.title}
                 instructor={course.instructor_name}
+                image={course.image}
                 isEnrolled={
                   course.students?.some(
                     (student) =>
@@ -104,46 +105,53 @@ export const CoursePage = () => {
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {selectedCourse && (
-          <>
-            <h2 className="course-modal-title">{selectedCourse.title}</h2>
-            <p>
-              <strong>Instructor:</strong> {selectedCourse.instructor}
-            </p>
-            <p>
-              <strong>Description:</strong> {selectedCourse.description}
-            </p>
-            <p>
-              <strong>Content:</strong>
-            </p>
-            <ul>
-              {selectedCourse.content.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
-            <div className="course-modal-actions">
-              {selectedCourse.students?.some(
-                (student) => student.studentId?.toString() == authData.userId
-              ) ? (
-                <p style={{ color: "green", fontWeight: "bold" }}>
-                  You are enrolled in this course.
-                </p>
-              ) : (
-                <>
-                  {status === "pending" ? (
-                    <Button
-                      type="button"
-                      text="Enrolling..."
-                      size="large"
-                      variant="secondary"
-                      disabled
-                    />
-                  ) : (
-                    <Button text="Enroll" onClick={handleEnroll} />
-                  )}
-                </>
-              )}
+          <div className="course-modal-content">
+            <div className="course-modal-image">
+              <img src={selectedCourse.image} alt={selectedCourse.title} />
             </div>
-          </>
+
+            <div className="course-modal-details">
+              <h2 className="course-modal-title">{selectedCourse.title}</h2>
+              <p>
+                <strong>Instructor:</strong> {selectedCourse.instructor_name}
+              </p>
+              <p>
+                <strong>Description:</strong> {selectedCourse.description}
+              </p>
+              <p>
+                <strong>Content:</strong>
+              </p>
+              <ul>
+                {selectedCourse.content.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+
+              <div className="course-modal-actions">
+                {selectedCourse.students?.some(
+                  (student) => student.studentId?.toString() == authData.userId
+                ) ? (
+                  <p style={{ color: "green", fontWeight: "bold" }}>
+                    You are enrolled in this course.
+                  </p>
+                ) : (
+                  <>
+                    {status === "pending" ? (
+                      <Button
+                        type="button"
+                        text="Enrolling..."
+                        size="large"
+                        variant="secondary"
+                        disabled
+                      />
+                    ) : (
+                      <Button text="Enroll" onClick={handleEnroll} />
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </Modal>
 

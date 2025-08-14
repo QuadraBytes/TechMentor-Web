@@ -7,6 +7,12 @@ const signIn = async (data) => {
   console.log(res.data);
   return res.data;
 };
+ 
+const googleSignIn = async (data) => {
+  const res = await apiClient.post("/google-signin", data);
+  console.log(res.data);
+  return res.data;
+};
 
 const register = async (data) => {
   const res = await apiClient.post("/register", data);
@@ -21,4 +27,4 @@ const fetchProfile = async ({ queryKey }) => {
   return res.data;
 };
 
-export { signIn, register, fetchProfile };
+export { signIn, googleSignIn, register, fetchProfile };

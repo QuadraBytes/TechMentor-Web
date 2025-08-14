@@ -11,12 +11,15 @@ import { InstructorPage } from "./pages/instructor/instructorPage";
 import { StudentPage } from "./pages/student/studentPage";
 import AboutPage from "./pages/about/aboutPage";
 import AiAssistant from "./components/aiAssistant/aiAssistant";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { googleClientId } from "./utils/baseUrl";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
     <Router>
+      <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <main>
@@ -33,6 +36,7 @@ const App = () => {
           </main>
         </QueryClientProvider>
       </AuthProvider>
+      </GoogleOAuthProvider>
     </Router>
   );
 };

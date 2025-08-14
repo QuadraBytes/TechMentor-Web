@@ -1,4 +1,4 @@
-import { useState , useContext } from "react";
+import { useState, useContext } from "react";
 import heroImg from "../../assets/hero.png";
 import logo from "../../assets/logo.png";
 import Button from "../../components/buttons/button";
@@ -6,9 +6,11 @@ import "./loginStyle.css";
 import { Link } from "react-router-dom";
 import circle1 from "../../assets/circle1.png";
 import circle2 from "../../assets/circle2.png";
-import { useSignIn } from "../../hooks/useAuthApi";
+import { useSignIn , useGoogleSignIn } from "../../hooks/useAuthApi";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/authContext";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -27,7 +29,14 @@ export default function LoginPage() {
 
   const handleSuccess = async (data) => {
     const { accessToken, refreshToken, user } = data;
-    await login(accessToken, refreshToken, user.id, user.name, user.email, data.role);
+    await login(
+      accessToken,
+      refreshToken,
+      user.id,
+      user.name,
+      user.email,
+      data.role
+    );
 
     if (data.role === "student") {
       navigation("/student");
@@ -42,6 +51,17 @@ export default function LoginPage() {
   };
 
   const { mutate, status } = useSignIn(handleSuccess, handleError);
+  const { mutate: googleLogin } = useGoogleSignIn(
+    handleSuccess,
+    handleError
+  );
+
+  const handleGoogleSignIn = (name, email) => {
+    googleLogin({
+      name,
+      email
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -109,6 +129,20 @@ export default function LoginPage() {
                 disabled={!isFormValid}
               />
             )}
+          </div>
+
+          <div className="google-login">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                const decoded = jwtDecode(credentialResponse.credential);
+                console.log(decoded);
+
+                handleGoogleSignIn(decoded.name, decoded.email);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
           </div>
 
           <p className="signup-text">

@@ -1,9 +1,23 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchProfile, register, signIn } from "../apis/authApis";
+import { fetchProfile, register, signIn, googleSignIn } from "../apis/authApis";
 
 const useSignIn = (onSuccess, onError) => {
   return useMutation({
     mutationFn: signIn,
+    onSuccess: (data) => {
+      console.log("success", data);
+      onSuccess(data);
+    },
+    onError: (error) => {
+      console.log("error", error);
+      onError(error);
+    },
+  });
+};
+
+const useGoogleSignIn = (onSuccess, onError) => {
+  return useMutation({
+    mutationFn: googleSignIn,
     onSuccess: (data) => {
       console.log("success", data);
       onSuccess(data);
@@ -45,4 +59,4 @@ const useProfile = (userId, onSuccess, onError) => {
   });
 };
 
-export { useSignIn, useRegister, useProfile };
+export { useSignIn, useRegister, useProfile, useGoogleSignIn };

@@ -151,3 +151,9 @@ button[disabled] {
   justify-content: center;
   margin-top: 30px;
 }
+
+.google-login {
+  margin-top: 10px;
+  width: 40%;
+  justify-self: center;
+}
