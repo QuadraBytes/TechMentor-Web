@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import heroImg from "../../assets/hero.png";
 import logo from "../../assets/logo.png";
 import Button from "../../components/buttons/button";
@@ -6,11 +6,18 @@ import "./loginStyle.css";
 import { Link } from "react-router-dom";
 import circle1 from "../../assets/circle1.png";
 import circle2 from "../../assets/circle2.png";
+import { useSignIn , useGoogleSignIn } from "../../hooks/useAuthApi";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/authContext";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState({ username: false, password: false });
+  const navigation = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleBlur = (field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -20,10 +27,47 @@ export default function LoginPage() {
   const passwordError = touched.password && password.trim() === "";
   const isFormValid = username.trim() !== "" && password.trim() !== "";
 
+  const handleSuccess = async (data) => {
+    const { accessToken, refreshToken, user } = data;
+    await login(
+      accessToken,
+      refreshToken,
+      user.id,
+      user.name,
+      user.email,
+      data.role
+    );
+
+    if (data.role === "student") {
+      navigation("/student");
+    } else if (data.role === "instructor") {
+      navigation("/instructor");
+    }
+  };
+
+  const handleError = (err) => {
+    console.log("Login failed:", err?.response?.data || err.message);
+    window.alert("Invalid credentials or network error.");
+  };
+
+  const { mutate, status } = useSignIn(handleSuccess, handleError);
+  const { mutate: googleLogin } = useGoogleSignIn(
+    handleSuccess,
+    handleError
+  );
+
+  const handleGoogleSignIn = (name, email) => {
+    googleLogin({
+      name,
+      email
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid) return;
-    alert(`Logging in with Username: ${username}`);
+    mutate({ username, password });
+    console.log("Logging in with:", { username, password });
   };
 
   return (
@@ -68,12 +112,36 @@ export default function LoginPage() {
           )}
 
           <div className="button-container">
-            <Button
-              type="submit"
-              text="Log In"
-              size="large"
-              variant="primary"
-              disabled={!isFormValid}
+            {status === "pending" ? (
+              <Button
+                type="button"
+                text="Logging In..."
+                size="large"
+                variant="secondary"
+                disabled
+              />
+            ) : (
+              <Button
+                type="submit"
+                text="Log In"
+                size="large"
+                variant="primary"
+                disabled={!isFormValid}
+              />
+            )}
+          </div>
+
+          <div className="google-login">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                const decoded = jwtDecode(credentialResponse.credential);
+                console.log(decoded);
+
+                handleGoogleSignIn(decoded.name, decoded.email);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
             />
           </div>
 

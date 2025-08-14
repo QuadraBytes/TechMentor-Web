@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import instructorImg from "../../assets/instructorSignUp.png";
 import studentImg from "../../assets/studentSignUp.png";
 import logo from "../../assets/logo.png";
@@ -7,17 +7,23 @@ import Button from "../../components/buttons/button";
 import "./loginStyle.css";
 import circle1 from "../../assets/circle1.png";
 import circle2 from "../../assets/circle2.png";
+import { useRegister, useGoogleSignIn } from "../../hooks/useAuthApi";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "../../contexts/authContext";
 
 export default function SignupPage() {
+  const navigation = useNavigate();
   const location = useLocation();
   const role = location.state || "student";
+  const { login } = useContext(AuthContext);
 
   const title =
     role === "instructor" ? "Sign Up as Instructor" : "Sign Up as Student";
   const img = role === "instructor" ? instructorImg : studentImg;
 
   const [form, setForm] = useState({
-    fullName: "",
+    fullname: "",
     email: "",
     phone: "",
     username: "",
@@ -25,7 +31,7 @@ export default function SignupPage() {
   });
 
   const [touched, setTouched] = useState({
-    fullName: false,
+    fullname: false,
     email: false,
     phone: false,
     username: false,
@@ -45,7 +51,7 @@ export default function SignupPage() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const errors = {
-    fullName: touched.fullName && isEmpty(form.fullName),
+    fullname: touched.fullname && isEmpty(form.fullname),
     email:
       touched.email &&
       (isEmpty(form.email) || !emailRegex.test(form.email.trim())),
@@ -55,19 +61,62 @@ export default function SignupPage() {
   };
 
   const isFormValid =
-    !isEmpty(form.fullName) &&
+    !isEmpty(form.fullname) &&
     emailRegex.test(form.email.trim()) &&
     !isEmpty(form.phone) &&
     !isEmpty(form.username) &&
     !isEmpty(form.password);
 
+  const handleSuccess = () => {
+    console.log("Registration successful");
+    window.alert("Registration Successful! You can now sign in.");
+    navigation("/login");
+  };
+
+  const handleGoogleSuccess = async (data) => {
+    const { accessToken, refreshToken, user } = data;
+    await login(
+      accessToken,
+      refreshToken,
+      user.id,
+      user.name,
+      user.email,
+      data.role
+    );
+
+    if (role === "student") {
+      navigation("/student");
+    } else if (role === "instructor") {
+      navigation("/instructor");
+    }
+  };
+
+  const handleError = () => {
+    console.log("Registration failed");
+    window.alert("Registration Failed! Please try again.");
+  };
+
+  const { mutate, status } = useRegister(handleSuccess, handleError);
+  const { mutate: googleLogin } = useGoogleSignIn(
+    handleGoogleSuccess,
+    handleError
+  );
+
+  const handleGoogleSignIn = (name, email) => {
+    googleLogin({
+      name,
+      email,
+      role,
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid) return;
-
-    alert(
-      `Sign up info:\nFull Name: ${form.fullName}\nEmail: ${form.email}\nPhone: ${form.phone}\nUsername: ${form.username}`
-    );
+    mutate({
+      ...form,
+      role: role,
+    });
   };
 
   return (
@@ -83,17 +132,17 @@ export default function SignupPage() {
           <h2>{title}</h2>
           <p>Please enter your details to create your account.</p>
 
-          <label htmlFor="fullName">Full Name</label>
+          <label htmlFor="fullname">Full Name</label>
           <input
-            id="fullName"
+            id="fullname"
             type="text"
-            value={form.fullName}
-            onChange={(e) => handleChange("fullName", e.target.value)}
-            onBlur={() => handleBlur("fullName")}
-            className={errors.fullName ? "input-error" : ""}
+            value={form.fullname}
+            onChange={(e) => handleChange("fullname", e.target.value)}
+            onBlur={() => handleBlur("fullname")}
+            className={errors.fullname ? "input-error" : ""}
             placeholder="Enter your full name"
           />
-          {errors.fullName && (
+          {errors.fullname && (
             <div className="error">Full Name cannot be empty</div>
           )}
 
@@ -158,12 +207,36 @@ export default function SignupPage() {
           )}
 
           <div className="button-container">
-            <Button
-              type="submit"
-              text="Sign Up"
-              size="large"
-              variant="primary"
-              disabled={!isFormValid}
+            {status === "pending" ? (
+              <Button
+                type="button"
+                text="Signing Up..."
+                size="large"
+                variant="secondary"
+                disabled
+              />
+            ) : (
+              <Button
+                type="submit"
+                text="Sign Up"
+                size="large"
+                variant="primary"
+                disabled={!isFormValid}
+              />
+            )}
+          </div>
+
+          <div className="google-login">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                const decoded = jwtDecode(credentialResponse.credential);
+                console.log(decoded);
+
+                handleGoogleSignIn(decoded.name, decoded.email);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
             />
           </div>
 

@@ -4,27 +4,114 @@ import Footer from "../../components/footer/footer";
 import InstructorCard from "../../components/courseCard/instructorCard";
 import Button from "../../components/buttons/button";
 import Modal from "../../components/model/model";
-import { useState } from "react";
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../../contexts/authContext";
+import { useInstructorCourses } from "../../hooks/useInstructorApi";
+import {
+  useDeleteCourse,
+  useEditCourse,
+  useAddCourse,
+} from "../../hooks/useCourseApi";
 
 export const InstructorPage = () => {
+  const { authData } = useContext(AuthContext);
+  const [modalMode, setModalMode] = useState("add");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [newCourse, setNewCourse] = useState({
     title: "",
     description: "",
     contents: [""],
+    image: ""
   });
   const [touched, setTouched] = useState({
     title: false,
     description: false,
   });
+  const [courses, setCourses] = useState([]);
 
-  // Sample student list (replace with real data later)
-  const enrolledStudents = [
-    { id: "S001", name: "Alice Johnson" },
-    { id: "S002", name: "Bob Smith" },
-    { id: "S003", name: "Charlie Brown" },
-  ];
+  const handleFetchSuccess = () => {
+    console.log("Courses fetched successfully:");
+  };
+
+  const handleFetchError = (error) => {
+    console.error("Error fetching courses:", error);
+    window.alert("Failed to fetch courses. Please try again later.");
+  };
+
+  const { data, isLoading, isError, refetch } = useInstructorCourses(
+    authData?.userId,
+    handleFetchSuccess,
+    handleFetchError
+  );
+
+  useEffect(() => {
+    if (data) {
+      setCourses(data.courses);
+    }
+  }, [data]);
+
+  const handleDeleteSuccess = () => {
+    window.alert("Course has been deleted successfully");
+    refetch();
+  };
+
+  const handleDeleteError = () => {
+    window.alert("Failed to delete course");
+  };
+
+  const { mutate: deleteCourse, status: deleteStatus } = useDeleteCourse(
+    handleDeleteSuccess,
+    handleDeleteError
+  );
+
+  const handleDelete = (course) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this course?"
+    );
+
+    if (confirmDelete) {
+      deleteCourse({ courseId: course.id });
+    }
+  };
+
+  const handleSuccess = () => {
+    window.alert("Course has been added successfully");
+    setNewCourse({
+      title: "",
+      description: "",
+      contents: [""],
+      image: ""
+    });
+    setIsModalOpen(false);
+    refetch();
+  };
+
+  const handleError = () => {
+    window.alert("Failed to submit course. Please try again.");
+  };
+
+  const { mutate, status } = useAddCourse(handleSuccess, handleError);
+
+  const handleUpdateSuccess = () => {
+    window.alert("Course updated successfully");
+    setNewCourse({
+      title: "",
+      description: "",
+      contents: [""],
+      image: ""
+    });
+  };
+
+  const handleUpdateError = () => {
+    window.alert("Failed to update course");
+  };
+
+  const { mutate: updateCourse, status: updateStatus } = useEditCourse(
+    handleUpdateSuccess,
+    handleUpdateError
+  );
 
   const handleBlur = (field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -40,12 +127,45 @@ export const InstructorPage = () => {
   const handleAddCourse = (e) => {
     e.preventDefault();
     if (!isFormValid) return;
-    alert(
-      `Course Title: ${newCourse.title}\nDescription: ${
-        newCourse.description
-      }\nContents: ${newCourse.contents.join(", ")}`
-    );
+    console.log("Adding course:", newCourse);
+    mutate({
+      title: newCourse.title,
+      description: newCourse.description,
+      instructor_id: authData?.userId,
+      instructor_name: authData?.userName,
+      instructor_email: authData?.userEmail,
+      content: newCourse.contents,
+      image: newCourse.image
+    });
     setIsModalOpen(false);
+  };
+
+  const handleEdit = (course) => {
+    setModalMode("edit");
+    setSelectedCourse(course);
+    setNewCourse({
+      title: course.title,
+      description: course.description,
+      contents: course.content || [""],
+      image: course.image || ""
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateModal = () => {
+    if (!isFormValid) return;
+    console.log("Updating course:", newCourse);
+    updateCourse({
+      courseId: selectedCourse.id,
+      data: {
+        title: newCourse.title,
+        description: newCourse.description,
+        content: newCourse.contents,
+        image: newCourse.image
+      },
+    });
+    setIsModalOpen(false);
+    setModalMode("add");
   };
 
   const handleAddContentBlock = () => {
@@ -68,47 +188,89 @@ export const InstructorPage = () => {
     setNewCourse({ ...newCourse, contents: updated });
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "techmentor-preset");
+
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/da7ajltkm/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await res.json();
+      console.log("Uploaded image URL:", data.secure_url);
+      setNewCourse((prev) => ({ ...prev, image: data.secure_url }));
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      alert("Image upload failed");
+    }
+  };
+
+
   return (
     <div>
       <Navbar />
       <div className="course-page">
         <h1>My Courses</h1>
-        <InstructorCard
-          title="Course 1"
-          description="Description for Course 1"
-          onEnrolledClick={() => setIsStudentsModalOpen(true)}
-        />
-        <InstructorCard
-          title="Course 2"
-          description="Description for Course 2"
-          onEnrolledClick={() => setIsStudentsModalOpen(true)}
-        />
-        <InstructorCard
-          title="Course 3"
-          description="Description for Course 3"
-          onEnrolledClick={() => setIsStudentsModalOpen(true)}
-        />
+        {isLoading && <p>Loading courses...</p>}
+        {isError && <p>Error loading courses. Please try again later.</p>}
+        {!isLoading && !isError && courses.length === 0 && (
+          <p>No courses available at the moment.</p>
+        )}
+        {!isLoading &&
+          !isError &&
+          courses.map((course, index) => (
+            <InstructorCard
+              key={index}
+              title={course.title}
+              description={course.description}
+              onClick={() => {
+                setSelectedCourse(course);
+                setIsStudentsModalOpen(true);
+              }}
+              onEdit={() => handleEdit(course)}
+              onDelete={() => handleDelete(course)}
+            />
+          ))}
       </div>
 
       <div className="add-button-container">
         <Button
           text="Add course"
           variant="secondary"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setModalMode("add");
+            setIsModalOpen(true);
+          }}
         />
       </div>
 
-      {/* Add Course Modal */}
       <Modal
         isOpen={isModalOpen}
         className="add-modal"
         onClose={() => setIsModalOpen(false)}
       >
-        <form className="form" onSubmit={handleAddCourse} noValidate>
-          <h4>Add New Course</h4>
-          <p>Please fill in the details to add your new course.</p>
+        <form
+          className="form"
+          onSubmit={modalMode === "add" ? handleAddCourse : handleUpdateModal}
+          noValidate
+        >
+          <h4 style={{ textAlign: "center" }}>
+            {modalMode === "add" ? "Add New Course" : "Edit Course"}
+          </h4>
+          <p>
+            {modalMode === "add"
+              ? "Please fill in the details to add your new course."
+              : "Update the details of your course."}
+          </p>
 
-          {/* Title */}
           <label htmlFor="courseTitle">Title</label>
           <input
             id="courseTitle"
@@ -126,7 +288,6 @@ export const InstructorPage = () => {
             <div className="error">Course title cannot be empty</div>
           )}
 
-          {/* Description */}
           <label htmlFor="courseDescription">Description</label>
           <input
             id="courseDescription"
@@ -168,6 +329,7 @@ export const InstructorPage = () => {
               )}
             </div>
           ))}
+
           <Button
             type="button"
             text="Add Content Block"
@@ -175,16 +337,44 @@ export const InstructorPage = () => {
             onClick={handleAddContentBlock}
           />
 
-          {/* Submit */}
-          <div className="button-container">
-            <Button
-              text="Save Course"
-              type="submit"
-              size="large"
-              variant="primary"
-              disabled={!isFormValid}
-            />
-          </div>
+          <label htmlFor="courseImage">Course Image</label>
+          <input
+            id="courseImage"
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleImageUpload(e)}
+          />
+          {newCourse.image && (
+            <div style={{ marginTop: "8px", display: "flex", justifyContent: "center" }}>
+              <img
+                src={newCourse.image}
+                alt="Course preview"
+                style={{ width: "150px", height: "auto", borderRadius: "8px" }}
+              />
+            </div>
+          )}
+
+          {status === "pending" ? (
+            <div className="button-container">
+              <Button
+                type="button"
+                text="Saving Course..."
+                size="large"
+                variant="secondary"
+                disabled={true}
+              />
+            </div>
+          ) : (
+            <div className="button-container">
+              <Button
+                text="Save Course"
+                type="submit"
+                size="large"
+                variant="primary"
+                disabled={!isFormValid}
+              />
+            </div>
+          )}
         </form>
       </Modal>
 
@@ -194,19 +384,22 @@ export const InstructorPage = () => {
         onClose={() => setIsStudentsModalOpen(false)}
       >
         <h2>Enrolled Students</h2>
-        {enrolledStudents.length > 0 ? (
+        <p style={{ fontWeight: "bold" }}>
+          Course: <span>{selectedCourse?.title}</span>
+        </p>
+        {selectedCourse?.students?.length > 0 ? (
           <table className="students-table">
             <thead>
               <tr>
-                <th>Student ID</th>
-                <th>Name</th>
+                <th style={{ textDecoration: "underline" }}>Student ID</th>
+                <th style={{ textDecoration: "underline" }}>Name</th>
               </tr>
             </thead>
             <tbody>
-              {enrolledStudents.map((student) => (
+              {selectedCourse?.students?.map((student) => (
                 <tr key={student.id}>
-                  <td>{student.id}</td>
-                  <td>{student.name}</td>
+                  <td>{student.studentId}</td>
+                  <td>{student.studentName}</td>
                 </tr>
               ))}
             </tbody>

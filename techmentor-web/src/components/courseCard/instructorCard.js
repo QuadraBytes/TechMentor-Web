@@ -3,7 +3,7 @@ import "./style.css";
 import Button from '../buttons/button';
 import { MdEdit, MdDelete } from "react-icons/md";
 
-export default function InstructorCard({ title, description, instructor, onEnrolledClick }) {
+export default function InstructorCard({ title, description, onClick, onEdit, onDelete }) {
   return (
     <div className="student-card">
       <div className="student-card__left">
@@ -13,15 +13,15 @@ export default function InstructorCard({ title, description, instructor, onEnrol
 
       <div className="student-card__right">
         <p className="student-card__status">
-          <button className="icon">
+          <button className="icon" onClick={onEdit}>
             <MdEdit />
           </button>
-          <button className="icon">
+          <button className="icon" onClick={onDelete}>
             <MdDelete />
           </button>
         </p>
         <div className="student-card__button-wrapper">
-          <Button text="Enrolled Students" onClick={onEnrolledClick} />
+          <Button text="Enrolled Students" onClick={onClick} />
         </div>
       </div>
     </div>

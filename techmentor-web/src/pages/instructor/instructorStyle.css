@@ -111,3 +111,14 @@ h2 {
     border-radius: 4px;
     cursor: pointer;
 }
+
+.students-table {
+    text-align: center;
+    align-self: center;
+    justify-self: center;
+}
+
+.students-table th,
+.students-table td {
+  padding: 8px 20px;
+}
