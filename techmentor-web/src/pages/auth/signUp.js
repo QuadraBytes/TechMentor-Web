@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import instructorImg from "../../assets/instructorSignUp.png";
 import studentImg from "../../assets/studentSignUp.png";
@@ -10,11 +10,13 @@ import circle2 from "../../assets/circle2.png";
 import { useRegister, useGoogleSignIn } from "../../hooks/useAuthApi";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "../../contexts/authContext";
 
 export default function SignupPage() {
   const navigation = useNavigate();
   const location = useLocation();
   const role = location.state || "student";
+  const { login } = useContext(AuthContext);
 
   const title =
     role === "instructor" ? "Sign Up as Instructor" : "Sign Up as Student";
@@ -71,9 +73,17 @@ export default function SignupPage() {
     navigation("/login");
   };
 
-  const handleGoogleSuccess = () => {
-    console.log("Google Sign-In successful");
-    window.alert("Google Sign-In Successful! You can now access your account.");
+  const handleGoogleSuccess = async (data) => {
+    const { accessToken, refreshToken, user } = data;
+    await login(
+      accessToken,
+      refreshToken,
+      user.id,
+      user.name,
+      user.email,
+      data.role
+    );
+
     if (role === "student") {
       navigation("/student");
     } else if (role === "instructor") {
