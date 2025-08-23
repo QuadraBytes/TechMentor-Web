@@ -14,7 +14,7 @@ export default function AiAssistant() {
 
   const { mutate, isLoading } = useAiSuggestions(
     (data) => {
-      setMessages((prev) => [...prev, { sender: "ai", text: data.aiRecommendations }]);
+      setMessages((prev) => [...prev, { sender: "ai", text: data.recommendations }]);
     },
     (error) => {
       setMessages((prev) => [

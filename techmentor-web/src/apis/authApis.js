@@ -7,7 +7,7 @@ const signIn = async (data) => {
   console.log(res.data);
   return res.data;
 };
- 
+
 const googleSignIn = async (data) => {
   const res = await apiClient.post("/auth/google-signin", data);
   console.log(res.data);
