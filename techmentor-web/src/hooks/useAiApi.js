@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { aiSuggestions } from "../services/aiService";
+import { getRecommendations } from "../apis/aiApis";
 
 const useAiSuggestions = (onSuccess, onError) => {
   return useMutation({
-    mutationFn: aiSuggestions,
+    mutationFn: getRecommendations,
     onSuccess,
     onError,
   });

@@ -8,13 +8,13 @@ export default function AiAssistant() {
   const [messages, setMessages] = useState([
     {
       sender: "ai",
-      text: "Hello! How can I assist you?",
+      text: "Hello! Tell me what you need to learn.",
     },
   ]);
 
   const { mutate, isLoading } = useAiSuggestions(
     (data) => {
-      setMessages((prev) => [...prev, { sender: "ai", text: data.data.aiRecommendations }]);
+      setMessages((prev) => [...prev, { sender: "ai", text: data.aiRecommendations }]);
     },
     (error) => {
       setMessages((prev) => [
