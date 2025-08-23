@@ -3,26 +3,26 @@ import ApiClient from "../services/apiService";
 const apiClient = ApiClient;
 
 const signIn = async (data) => {
-  const res = await apiClient.post("/signin", data);
+  const res = await apiClient.post("/auth/signin", data);
   console.log(res.data);
   return res.data;
 };
- 
+
 const googleSignIn = async (data) => {
-  const res = await apiClient.post("/google-signin", data);
+  const res = await apiClient.post("/auth/google-signin", data);
   console.log(res.data);
   return res.data;
 };
 
 const register = async (data) => {
-  const res = await apiClient.post("/register", data);
+  const res = await apiClient.post("/auth/register", data);
   console.log(res.data);
   return res.data;
 };
 
 const fetchProfile = async ({ queryKey }) => {
   const [_, userId] = queryKey;
-  const res = await apiClient.get(`/profile/${userId}`);
+  const res = await apiClient.get(`/auth/profile/${userId}`);
   console.log(res.data);
   return res.data;
 };
