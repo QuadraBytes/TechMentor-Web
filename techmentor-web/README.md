@@ -44,6 +44,6 @@ npm run build
 ## Deployment (AWS S3)
 
 ```bash
-
+deploy.ps1
 ```
 
